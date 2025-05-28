@@ -1,0 +1,21 @@
+{
+  "name": "h-easy-com-new",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "pnpm --filter play dev"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@blu3trap/components": "workspace:^",
+    "@blu3trap/theme-chalk": "workspace:^",
+    "@blu3trap/utils": "workspace:^",
+    "typescript": "^5.8.3",
+    "vue": "^3.5.15"
+  }
+}
