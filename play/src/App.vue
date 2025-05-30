@@ -1,25 +1,18 @@
 <template>
   <div>
-    <HIcon :class="bem.b()" color="#e60" size="40">
+    <HIcon color="#e60" size="40">
       <DiscSharp />
     </HIcon>
-    <HIcon :class="bem.b()" color="pink" size="40">
+    <HIcon color="pink" size="40">
       <DiscSharp />
     </HIcon>
-    <HTree
-      :data="data"
-      label-field="label"
-      key-field="key"
-      children-field="children"
-    ></HTree>
+    <HTree :data="data"></HTree>
   </div>
 </template>
 
 <script setup lang="ts">
 import { DiscSharp } from "@vicons/ionicons5";
-import { createNamespace } from "@blu3trap/utils/create";
 import { ref } from "vue";
-const bem = createNamespace("icon");
 
 function createData(level = 4, baseKey = ""): any {
   if (!level) return [];

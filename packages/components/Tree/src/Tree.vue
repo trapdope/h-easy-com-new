@@ -1,13 +1,27 @@
-<template>tree</template>
+<template>
+  <div :class="bem.b()">
+    {{ expandKeys }}
+    <HTreeNode
+      v-for="node in flattenTree"
+      :node
+      :key="node.key"
+      :expanded="isExpanded(node)"
+      @toggle="toggleExpand"
+    >
+    </HTreeNode>
+  </div>
+</template>
 
 <script setup lang="ts">
 import { treeProps, TreeNode, TreeOptions } from "./tree";
-import { ref, watch } from "vue";
-
+import { computed, ref, watch } from "vue";
+import { createNamespace } from "@blu3trap/utils/create";
+import HTreeNode from "./TreeNode.vue";
 // 定义组件选项
 defineOptions({
   name: "HTree",
 });
+const bem = createNamespace("tree");
 
 // 定义组件的 props
 const props = defineProps(treeProps);
@@ -15,27 +29,32 @@ const props = defineProps(treeProps);
 // 定义树节点的响应式引用
 const tree = ref<TreeNode[]>([]);
 
-// 用于记录当前节点的层级
-let level = 1;
 // 格式化单个节点
-const formatOptions = (data: TreeOptions, level: number): TreeNode => {
+const formatOptions = (
+  data: TreeOptions,
+  parentKey: string = "",
+  level: number = 1
+): TreeNode => {
   return {
     label: data[props.labelField] as string,
     key: data[props.keyField] as string,
+    level: level,
     children: (data[props.childrenField]
       ? (data[props.childrenField] as TreeOptions[]).map((child) =>
-          formatOptions(child, level + 1)
+          formatOptions(child, data[props.keyField] as string, level + 1)
         )
       : []) as TreeNode[],
     rawNode: data,
-    level,
+    isLeaf:
+      data.isLeaf ?? (data[props.childrenField] as TreeOptions[]).length === 0,
+    parentKey,
   };
 };
 
 // 格式化整个树
 const formatTree = (data: TreeOptions[]): TreeNode[] => {
   return data.map((node) => {
-    return formatOptions(node, level);
+    return formatOptions(node);
   }) as TreeNode[];
 };
 
@@ -50,12 +69,59 @@ watch(
   () => props.data as TreeOptions[],
   (v) => {
     tree.value = createTree(v);
-    console.log("tree.value", tree.value);
   },
   {
     immediate: true,
   }
 );
+const getExpandKeys = (): string[] => {
+  return (
+    typeof props.defaultExpandKeys === "string" ||
+    typeof props.defaultExpandKeys === "number"
+      ? [props.defaultExpandKeys].map((key) => String(key))
+      : props.defaultExpandKeys
+  ) as string[];
+};
+const expandKeys = ref<string[]>(getExpandKeys());
+
+const flattenTree = computed(() => {
+  const flattenNodes: TreeNode[] = [];
+  const nodes = [...tree.value].reverse();
+  const reverseInStack = (nodes: TreeNode[]) => {
+    while (nodes.length) {
+      const node = nodes.pop();
+      // shift 不仅要移除第一个元素，还需要将后续元素全部向前移动一位，时间复杂度为 O(n)，性能明显慢于 pop()
+      if (!node) continue;
+      flattenNodes.push(node);
+      if (expandKeys.value.includes(node.key as string)) {
+        if (node.children && node.children.length) {
+          reverseInStack([...node.children].reverse());
+        }
+      }
+    }
+  };
+  reverseInStack(nodes);
+  return flattenNodes;
+});
+
+const isExpanded = (node: TreeNode): boolean => {
+  return expandKeys.value.includes(node.key as string);
+};
+const expand = (node: TreeNode) => {
+  expandKeys.value.push(node.key as string);
+};
+const collpase = (node: TreeNode) => {
+  const index = expandKeys.value.indexOf(node.key as string);
+  expandKeys.value.splice(index, 1);
+};
+
+const toggleExpand = (node: TreeNode) => {
+  if (isExpanded(node)) {
+    collpase(node);
+  } else {
+    expand(node);
+  }
+};
 </script>
 
 <style scoped></style>

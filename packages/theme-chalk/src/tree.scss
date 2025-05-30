@@ -1,0 +1,41 @@
+@use "mixins/mixins.scss" as *;
+
+@keyframes loading {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@include b(tree) {
+  width: 100%;
+}
+@include b(tree-node) {
+  padding: 5px 0;
+  font-size: 16px;
+  &:hover {
+    background-color: #eee;
+  }
+  @include e(expand-icon) {
+    cursor: pointer;
+    display: inline-block;
+    vertical-align: middle;
+    transition: transform 0.2s ease-in;
+    -webkit-transition: transform 0.2s ease-in;
+    -moz-transition: transform 0.2s ease-in;
+    -ms-transition: transform 0.2s ease-in;
+    -o-transition: transform 0.2s ease-in;
+    &.expanded {
+      transform: rotate(90deg);
+      -webkit-transform: rotate(90deg);
+      -moz-transform: rotate(90deg);
+      -ms-transform: rotate(90deg);
+      -o-transform: rotate(90deg);
+    }
+  }
+  &.is-leaf {
+    fill: transparent;
+    cursor: default;
+  }
+}

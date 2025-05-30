@@ -1,5 +1,5 @@
 <template>
-  <i :style="style">
+  <i :style="style" :class="bem.b()">
     <slot></slot>
   </i>
 </template>
