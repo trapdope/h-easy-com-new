@@ -1,5 +1,5 @@
 <template>
-  <i :style="style" :class="bem.b()">
+  <i :style="style" :class="[bem.b(), { rotate: props.rotate }]">
     <slot></slot>
   </i>
 </template>

@@ -1,19 +1,16 @@
 @use "mixins/mixins.scss" as *;
 
-@keyframes loading {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
 @include b(tree) {
   width: 100%;
 }
 @include b(tree-node) {
   padding: 5px 0;
   font-size: 16px;
+  transition: all 0.3s ease-in-out;
+  -webkit-transition: all 0.3s ease-in-out;
+  -moz-transition: all 0.3s ease-in-out;
+  -ms-transition: all 0.3s ease-in-out;
+  -o-transition: all 0.3s ease-in-out;
   &:hover {
     background-color: #eee;
   }

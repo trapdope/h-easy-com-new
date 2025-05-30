@@ -36,7 +36,12 @@ export const treeProps = {
     defaultExpandKeys: {
         type: [String, Number, Array] as PropType<Key | Key[]>,
         default: () => []
+    },
+    load: {
+        type: Function as PropType<(node: TreeNode) => Promise<TreeNode[]>>,
+        default: () => null
     }
+
 } as const;
 
 export const treeNodeProps = {
@@ -45,6 +50,10 @@ export const treeNodeProps = {
         required: true
     },
     expanded: {
+        type: Boolean,
+        default: false
+    },
+    loading: {
         type: Boolean,
         default: false
     }

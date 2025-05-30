@@ -1,6 +1,5 @@
 <template>
   <div :class="bem.b()">
-    {{ expandKeys }}
     <HTreeNode
       v-for="node in flattenTree"
       :node
@@ -46,7 +45,7 @@ const formatOptions = (
       : []) as TreeNode[],
     rawNode: data,
     isLeaf:
-      data.isLeaf ?? (data[props.childrenField] as TreeOptions[]).length === 0,
+      data.isLeaf ?? (data[props.childrenField] as TreeOptions[])?.length === 0,
     parentKey,
   };
 };
@@ -82,7 +81,7 @@ const getExpandKeys = (): string[] => {
       : props.defaultExpandKeys
   ) as string[];
 };
-const expandKeys = ref<string[]>(getExpandKeys());
+const expandKeys = ref<Set<string>>(new Set(getExpandKeys()));
 
 const flattenTree = computed(() => {
   const flattenNodes: TreeNode[] = [];
@@ -93,7 +92,7 @@ const flattenTree = computed(() => {
       // shift 不仅要移除第一个元素，还需要将后续元素全部向前移动一位，时间复杂度为 O(n)，性能明显慢于 pop()
       if (!node) continue;
       flattenNodes.push(node);
-      if (expandKeys.value.includes(node.key as string)) {
+      if (expandKeys.value.has(node.key as string)) {
         if (node.children && node.children.length) {
           reverseInStack([...node.children].reverse());
         }
@@ -105,14 +104,23 @@ const flattenTree = computed(() => {
 });
 
 const isExpanded = (node: TreeNode): boolean => {
-  return expandKeys.value.includes(node.key as string);
+  return expandKeys.value.has(node.key as string);
 };
 const expand = (node: TreeNode) => {
-  expandKeys.value.push(node.key as string);
+  if (node.isLeaf || node.loading) return;
+  expandKeys.value.add(node.key as string);
+  if (node.children && node.children.length) return;
+  node.loading = true;
+  props.load(node).then((res) => {
+    node.children = res.map((v) => {
+      return formatOptions(v, node.key as string, node.level + 1);
+    });
+    node.loading = false;
+    console.log(node);
+  });
 };
 const collpase = (node: TreeNode) => {
-  const index = expandKeys.value.indexOf(node.key as string);
-  expandKeys.value.splice(index, 1);
+  expandKeys.value.delete(node.key as string);
 };
 
 const toggleExpand = (node: TreeNode) => {
