@@ -81,8 +81,10 @@ const getExpandKeys = (): string[] => {
       : props.defaultExpandKeys
   ) as string[];
 };
+// 使用set存储 后面更好进行查找和删除
 const expandKeys = ref<Set<string>>(new Set(getExpandKeys()));
 
+// 展平树结构以便于渲染
 const flattenTree = computed(() => {
   const flattenNodes: TreeNode[] = [];
   const nodes = [...tree.value].reverse();
@@ -103,9 +105,11 @@ const flattenTree = computed(() => {
   return flattenNodes;
 });
 
+// 判断节点是否展开
 const isExpanded = (node: TreeNode): boolean => {
   return expandKeys.value.has(node.key as string);
 };
+// 展开节点
 const expand = (node: TreeNode) => {
   if (node.isLeaf || node.loading) return;
   expandKeys.value.add(node.key as string);
@@ -116,13 +120,14 @@ const expand = (node: TreeNode) => {
       return formatOptions(v, node.key as string, node.level + 1);
     });
     node.loading = false;
-    console.log(node);
   });
 };
+// 折叠节点
 const collpase = (node: TreeNode) => {
   expandKeys.value.delete(node.key as string);
 };
 
+// 切换节点的展开状态
 const toggleExpand = (node: TreeNode) => {
   if (isExpanded(node)) {
     collpase(node);
