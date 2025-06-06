@@ -178,3 +178,92 @@ import Button, { Input, Select } from './components';
 ##### 总结
 
 通过将`export default`和`export * from 'xxx'`结合使用，可以打造出结构清晰的模块接口。这样一来，用户既能通过默认导出获取主要功能，又能按需导入其他辅助功能，提升了模块的易用性。
+
+
+
+#### nrm：npm源管理工具
+
+`nrm`（NPM Registry Manager）是一个用于快速切换 npm 镜像源的命令行工具，特别适合国内开发者在网络环境不佳时提高包下载速度。以下是关于它的详细介绍：
+
+##### **安装方法**
+
+```bash
+npm install -g nrm
+```
+
+##### **常用命令**
+
+1. **查看可用镜像源**
+
+   ```bash
+   nrm ls
+   ```
+
+   输出示例：
+
+   ```plaintext
+   * npm -------- https://registry.npmjs.org/
+     yarn ------- https://registry.yarnpkg.com/
+     tencent ---- https://mirrors.cloud.tencent.com/npm/
+     cnpm ------- https://r.cnpmjs.org/
+     taobao ----- https://registry.npmmirror.com/
+     npmMirror -- https://skimdb.npmjs.com/registry/
+   ```
+
+   `*` 表示当前使用的镜像源。
+
+2. **切换镜像源**
+
+   ```bash
+   nrm use taobao  # 切换到淘宝镜像
+   ```
+
+3. **测试镜像速度**
+
+   ```bash
+   nrm test npm     # 测试npm官方镜像的响应时间
+   nrm test         # 测试所有镜像的响应时间
+   ```
+
+4. **添加自定义镜像**
+
+   ```bash
+   nrm add <registry_name> <registry_url>
+   ```
+
+   例如：
+
+   ```bash
+   nrm add company https://registry.company.com
+   ```
+
+5. **删除镜像**
+
+   ```bash
+   nrm del <registry_name>
+   ```
+
+6. **查看当前使用的镜像**
+
+   ```bash
+   nrm current
+   ```
+
+##### **常见问题**
+
+1. **使用后 npm 命令失效**
+   可能是环境变量配置问题，可尝试手动修改 npm 配置：
+
+   ```bash
+   npm config set registry https://registry.npmjs.org
+   ```
+
+2. **镜像源更新不及时**
+   优先选择官方推荐的镜像（如淘宝镜像），或定期执行 `nrm test` 选择最快的镜像。
+
+##### **注意事项**
+
+- **私有项目**：使用公司内部镜像时，需确保该镜像包含所需的私有包。
+- **全局包安装**：部分工具（如 `vue-cli`）建议使用官方镜像安装，避免兼容性问题。
+
+通过 `nrm`，你可以高效管理 npm 镜像源，提升开发效率。

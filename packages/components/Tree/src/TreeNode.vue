@@ -1,5 +1,5 @@
 <template>
-  <div :class="bem.b()">
+  <div :class="[bem.b(), { [bem.is('loading')]: props.node.loading }]">
     <div
       :class="bem.e('content')"
       :style="{ paddingLeft: props.node.level * 16 + 'px' }"
@@ -14,13 +14,19 @@
       >
         <slot name="expandIcon">
           <HIcon size="16" color="gray" :rotate="props.node.loading as boolean">
-            <ChevronForward v-if="!props.node.loading" />
-            <Sync v-else />
+            <slot name="expandIcon" v-if="!props.node.loading">
+              <ChevronForward />
+            </slot>
+            <slot name="loadingIcon" v-else>
+              <Sync />
+            </slot>
           </HIcon>
         </slot>
       </span>
-      <span>
-        {{ props.node.label }}
+      <span :class="bem.e('label')">
+        <slot :data="props.node">
+          {{ props.node.label }}
+        </slot>
       </span>
     </div>
   </div>
@@ -37,7 +43,6 @@ const bem = createNamespace("tree-node");
 const props = defineProps(treeNodeProps);
 
 const emit = defineEmits(treeNodeEmits);
-
 // 展开或收缩时告诉父组件 需要收缩的节点
 const handleExpand = () => {
   emit("toggle", props.node);

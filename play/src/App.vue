@@ -6,7 +6,7 @@
     <HIcon color="pink" size="40">
       <DiscSharp />
     </HIcon>
-    <HTree :data="data" :load="load"></HTree>
+    <HTree :data="data" :load="load"> </HTree>
   </div>
 </template>
 
@@ -49,6 +49,11 @@ const data = ref([
     label: "根节点 2",
     isLeaf: false,
   },
+  {
+    key: "2",
+    label: "根节点 3",
+    isLeaf: true,
+  },
 ]);
 const createChildren = (node: TreeOptions): unknown => {
   console.log(node);
@@ -65,12 +70,12 @@ const createChildren = (node: TreeOptions): unknown => {
   );
   return children as unknown;
 };
-const load = (node: TreeOptions): Promise<TreeOptions[]> => {
+const load = (node: TreeNode): Promise<TreeNode[]> => {
   return new Promise((resolve) => {
     setTimeout(() => {
       const result = createChildren(node);
-      resolve(result as TreeOptions[]);
-    }, 1000);
+      resolve(result as TreeNode[]);
+    }, 100000);
   });
 };
 </script>
